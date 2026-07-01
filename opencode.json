@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "dev-agent": {
+      "description": "Chrome/Edge 扩展开发专家，根据需求生成 Manifest V3 插件的完整代码",
+      "mode": "subagent"
+    },
+    "review-agent": {
+      "description": "浏览器插件安全专家和代码评审员，审查扩展代码的安全性和规范性",
+      "mode": "subagent"
+    },
+    "test-agent": {
+      "description": "浏览器扩展 QA 测试专家，使用 Playwright 编写 E2E 自动化测试脚本",
+      "mode": "subagent"
+    }
+  }
+}
