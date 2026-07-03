@@ -20,11 +20,6 @@
     for (const key of Object.keys(DEFAULT_CONFIG)) {
       if (changes[key] !== undefined) config[key] = changes[key].newValue;
     }
-    if (changes.theme && translatePopup) {
-      translatePopup.classList.remove('theme-dark', 'theme-light');
-      const isDark = config.theme === 'dark' ? true : config.theme === 'light' ? false : window.matchMedia('(prefers-color-scheme: dark)').matches;
-      translatePopup.classList.add(isDark ? 'theme-dark' : 'theme-light');
-    }
   });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -34,7 +29,6 @@
     } else {
       sendResponse({ success: false, error: 'Unknown action' });
     }
-    return true;
   });
 
   async function loadConfig() {
@@ -48,7 +42,7 @@
     }
   }
 
-  document.addEventListener('pointerup', (event) => {
+  document.addEventListener('mouseup', (event) => {
     if (iconHideTimeout) {
       clearTimeout(iconHideTimeout);
       iconHideTimeout = null;
@@ -97,7 +91,7 @@
       translateIcon = document.createElement('div');
       translateIcon.id = 'ai-translate-icon';
       translateIcon.insertAdjacentHTML('afterbegin', '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>');
-      translateIcon.title = chrome.i18n.getMessage('translateThis');
+      translateIcon.title = chrome.i18n.getMessage('translateThis') || '\u7ffb\u8bd1\u6b64\u6587\u672c';
       translateIcon.addEventListener('click', (e) => {
         e.stopPropagation();
         showTranslatePopup(selectedText);
@@ -147,12 +141,12 @@
     header.className = 'popup-header';
     const titleSpan = document.createElement('span');
     titleSpan.className = 'popup-title';
-    titleSpan.textContent = chrome.i18n.getMessage('translating');
+    titleSpan.textContent = chrome.i18n.getMessage('translating') || '\u7ffb\u8bd1\u4e2d...';
     header.appendChild(titleSpan);
     const closeBtn = document.createElement('button');
     closeBtn.className = 'popup-close';
     closeBtn.innerHTML = '&times;';
-    closeBtn.title = chrome.i18n.getMessage('closeBtn');
+    closeBtn.title = chrome.i18n.getMessage('close') || '\u5173\u95ed';
     closeBtn.addEventListener('click', () => hideTranslatePopup());
     header.appendChild(closeBtn);
     translatePopup.appendChild(header);
@@ -168,7 +162,7 @@
 
     const resultDiv = document.createElement('div');
     resultDiv.className = 'popup-result';
-    resultDiv.innerHTML = '<div class="popup-loading"><div class="spinner"></div><span>' + (chrome.i18n.getMessage('translating')) + '</span></div>';
+    resultDiv.innerHTML = '<div class="popup-loading"><div class="spinner"></div><span>' + (chrome.i18n.getMessage('translating') || '\u7ffb\u8bd1\u4e2d...') + '</span></div>';
     translatePopup.appendChild(resultDiv);
 
     const actions = document.createElement('div');
@@ -176,76 +170,43 @@
 
     const copyBtn = document.createElement('button');
     copyBtn.className = 'popup-btn';
-    copyBtn.textContent = chrome.i18n.getMessage('copy');
+    copyBtn.textContent = chrome.i18n.getMessage('copy') || '\u590d\u5236';
     copyBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const resultContent = resultDiv.querySelector('.popup-result-text')?.textContent || '';
       if (resultContent) {
         try {
           await navigator.clipboard.writeText(resultContent);
-        } catch {
-          const ta = document.createElement('textarea');
-          ta.value = resultContent;
-          ta.style.position = 'fixed';
-          ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          ta.remove();
-        }
-        copyBtn.textContent = chrome.i18n.getMessage('copied');
-        setTimeout(() => { copyBtn.textContent = chrome.i18n.getMessage('copy'); }, 2000);
+          copyBtn.textContent = chrome.i18n.getMessage('copied') || '\u5df2\u590d\u5236';
+          setTimeout(() => { copyBtn.textContent = chrome.i18n.getMessage('copy') || '\u590d\u5236'; }, 2000);
+        } catch (err) { console.warn('[AI Translate] Copy failed:', err); }
       }
     });
     actions.appendChild(copyBtn);
 
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'popup-btn popup-btn-save';
-    saveBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
-    saveBtn.title = chrome.i18n.getMessage('saveWord');
-    saveBtn.style.display = 'none';
-    saveBtn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      const resultContent = resultDiv.querySelector('.popup-result-text')?.textContent || '';
-      if (!resultContent) return;
-      try {
-        const response = await chrome.runtime.sendMessage({
-          action: 'addWord',
-          entry: { word: text, translation: resultContent, targetLang: config.targetLang }
-        });
-        if (response?.success) {
-          saveBtn.innerHTML = '&#10003;';
-          setTimeout(() => {
-            saveBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
-          }, 2000);
-        }
-      } catch (err) { console.warn('[AI Translate] Save failed:', err); }
-    });
-    actions.appendChild(saveBtn);
-
     const retryBtn = document.createElement('button');
     retryBtn.className = 'popup-btn';
-    retryBtn.textContent = chrome.i18n.getMessage('retry');
+    retryBtn.textContent = chrome.i18n.getMessage('retry') || '\u91cd\u8bd5';
     retryBtn.style.display = 'none';
     retryBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const headerTitle = translatePopup?.querySelector('.popup-title');
-      if (headerTitle) headerTitle.textContent = chrome.i18n.getMessage('translating');
-      resultDiv.innerHTML = '<div class="popup-loading"><div class="spinner"></div><span>' + (chrome.i18n.getMessage('translating')) + '</span></div>';
+      if (headerTitle) headerTitle.textContent = chrome.i18n.getMessage('translating') || '\u7ffb\u8bd1\u4e2d...';
+      resultDiv.innerHTML = '<div class="popup-loading"><div class="spinner"></div><span>' + (chrome.i18n.getMessage('translating') || '\u7ffb\u8bd1\u4e2d...') + '</span></div>';
       retryBtn.style.display = 'none';
-      if (saveBtn) saveBtn.style.display = 'none';
-      doTranslate(text, resultDiv, header.querySelector('.popup-title'), retryBtn, saveBtn);
+      doTranslate(text, resultDiv, header.querySelector('.popup-title'), retryBtn);
     });
     actions.appendChild(retryBtn);
     translatePopup.appendChild(actions);
 
     positionPopup(translatePopup);
+    document.body.appendChild(translatePopup);
     isPopupVisible = true;
 
-    doTranslate(text, resultDiv, header.querySelector('.popup-title'), retryBtn, saveBtn);
+    doTranslate(text, resultDiv, header.querySelector('.popup-title'), retryBtn);
   }
 
-  async function doTranslate(text, resultDiv, titleEl, retryBtn, saveBtn) {
+  async function doTranslate(text, resultDiv, titleEl, retryBtn) {
     try {
       const response = await chrome.runtime.sendMessage({
         action: 'translate',
@@ -254,10 +215,9 @@
       });
       if (response && response.success) {
         resultDiv.innerHTML = '<div class="popup-result-text">' + escapeHtml(response.translation) + '</div>';
-        if (titleEl) titleEl.textContent = chrome.i18n.getMessage('quickTranslate');
-        if (saveBtn) saveBtn.style.display = '';
+        if (titleEl) titleEl.textContent = chrome.i18n.getMessage('quickTranslate') || '\u7ffb\u8bd1\u7ed3\u679c';
       } else {
-        const errMsg = response?.error || chrome.i18n.getMessage('translationFailed');
+        const errMsg = response?.error || chrome.i18n.getMessage('translationFailed') || '\u7ffb\u8bd1\u5931\u8d25';
         resultDiv.innerHTML = '<div class="popup-error">\u274c ' + escapeHtml(errMsg) + '</div>';
         if (retryBtn) retryBtn.style.display = '';
       }

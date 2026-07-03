@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +18,7 @@
       </button>
     </div>
     <div class="popup-lang-row">
-      <label for="popupTargetLang">__MSG_targetLabel__</label>
+      <label for="popupTargetLang">__MSG_targetLang__</label>
       <select id="popupTargetLang">
         <option value="zh-CN">__MSG_languageName_zh_CN__</option>
         <option value="zh-TW">__MSG_languageName_zh_TW__</option>
@@ -52,14 +52,9 @@
     <div id="popupResult" class="popup-result-area" style="display:none;">
       <div class="popup-result-header">
         <span>__MSG_translating__</span>
-        <div class="popup-result-actions">
-          <button class="popup-result-save" id="popupSaveBtn" title="__MSG_saveWord__">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-          </button>
-          <button class="popup-result-copy" id="popupCopyBtn" title="__MSG_copy__">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-        </div>
+        <button class="popup-result-copy" id="popupCopyBtn" title="__MSG_copy__">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
       </div>
       <div id="popupResultText" class="popup-result-text"></div>
     </div>

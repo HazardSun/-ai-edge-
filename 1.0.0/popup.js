@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  document.documentElement.lang = chrome.i18n.getUILanguage();
   const inputText = document.getElementById('popupInputText');
   const targetLang = document.getElementById('popupTargetLang');
   const translateBtn = document.getElementById('translateBtn');
@@ -8,7 +7,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const resultText = document.getElementById('popupResultText');
   const statusEl = document.getElementById('popupStatus');
   const copyBtn = document.getElementById('popupCopyBtn');
-  const saveBtn = document.getElementById('popupSaveBtn');
   const settingsBtn = document.getElementById('openSettings');
 
   async function loadConfig() {
@@ -24,29 +22,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     await chrome.storage.sync.set({ targetLang: lang });
   }
 
-  function t(key) { return chrome.i18n.getMessage(key) || key; }
-
   async function doTranslate() {
     const text = inputText.value.trim();
     if (!text) {
-      showStatus(t('noTextToTranslate'), 'warn');
+      showStatus('\u8bf7\u8f93\u5165\u8981\u7ffb\u8bd1\u7684\u6587\u672c', 'warn');
       return;
     }
     if (text.length > 10000) {
-      showStatus(t('textTooLong'), 'error');
+      showStatus('\u6587\u672c\u8fc7\u957f\uff0c\u8bf7\u9650\u5236\u5728 10000 \u5b57\u7b26\u4ee5\u5185', 'error');
       return;
     }
 
     resultArea.style.display = 'block';
     const resultHeader = resultArea.querySelector('.popup-result-header span');
-    resultHeader.textContent = t('translating');
+    resultHeader.textContent = '\u7ffb\u8bd1\u4e2d...';
     resultText.textContent = '';
     copyBtn.style.display = 'none';
-    saveBtn.style.display = 'none';
     statusEl.className = 'popup-status';
     statusEl.textContent = '';
     translateBtn.disabled = true;
-    translateBtn.textContent = t('translatingBtn');
+    translateBtn.textContent = '\u7ffb\u8bd1\u4e2d...';
 
     try {
       const response = await chrome.runtime.sendMessage({
@@ -56,33 +51,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       if (response?.success) {
         resultText.textContent = response.translation;
-        resultHeader.textContent = t('translateResult');
+        resultHeader.textContent = '\u7ffb\u8bd1\u7ed3\u679c';
         copyBtn.style.display = '';
-        saveBtn.style.display = '';
       } else {
-        const errMsg = response?.error || t('translationFailed');
+        const errMsg = response?.error || '\u7ffb\u8bd1\u5931\u8d25';
         resultText.innerHTML = '<span class="error-text">\u274c ' + escapeHtml(errMsg) + '</span>';
-        resultHeader.textContent = t('translationFailed');
+        resultHeader.textContent = '\u7ffb\u8bd1\u5931\u8d25';
         copyBtn.style.display = 'none';
-        saveBtn.style.display = 'none';
       }
     } catch (err) {
       resultText.innerHTML = '<span class="error-text">\u274c ' + escapeHtml(err.message) + '</span>';
-      resultHeader.textContent = t('translationFailed');
+      resultHeader.textContent = '\u7ffb\u8bd1\u5931\u8d25';
       copyBtn.style.display = 'none';
-      saveBtn.style.display = 'none';
     } finally {
       translateBtn.disabled = false;
-      translateBtn.textContent = t('translate');
+      translateBtn.textContent = '\u7ffb\u8bd1';
     }
   }
 
-  let statusTimeout;
   function showStatus(msg, type) {
-    if (statusTimeout) clearTimeout(statusTimeout);
     statusEl.className = 'popup-status popup-status-' + (type || 'info');
     statusEl.textContent = msg;
-    statusTimeout = setTimeout(() => { statusEl.className = 'popup-status'; }, 3000);
+    setTimeout(() => { statusEl.className = 'popup-status'; }, 3000);
   }
 
   function escapeHtml(text) {
@@ -96,26 +86,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (text) {
       try {
         await navigator.clipboard.writeText(text);
-        showStatus(t('copied'), 'success');
-      } catch { showStatus(t('copyFailed'), 'error'); }
-    }
-  });
-
-  saveBtn.addEventListener('click', async () => {
-    const word = inputText.value.trim();
-    const translation = resultText.textContent;
-    if (word && translation && !translation.startsWith('\u274c')) {
-      try {
-        const response = await chrome.runtime.sendMessage({
-          action: 'addWord',
-          entry: { word: word, translation: translation, targetLang: targetLang.value }
-        });
-        if (response?.success) {
-          showStatus(t('saveSuccess'), 'success');
-        }
-      } catch (err) {
-        showStatus(t('saveFailed'), 'error');
-      }
+        showStatus('\u5df2\u590d\u5236', 'success');
+      } catch { showStatus('\u590d\u5236\u5931\u8d25', 'error'); }
     }
   });
 
