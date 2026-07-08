@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  document.documentElement.lang = chrome.i18n.getUILanguage();
+  document.documentElement.lang = 'zh-CN';
   const inputText = document.getElementById('popupInputText');
   const targetLang = document.getElementById('popupTargetLang');
   const translateBtn = document.getElementById('translateBtn');
@@ -24,29 +24,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     await chrome.storage.sync.set({ targetLang: lang });
   }
 
-  function t(key) { return chrome.i18n.getMessage(key) || key; }
-
   async function doTranslate() {
     const text = inputText.value.trim();
     if (!text) {
-      showStatus(t('noTextToTranslate'), 'warn');
+      showStatus('请输入要翻译的文本', 'warn');
       return;
     }
     if (text.length > 10000) {
-      showStatus(t('textTooLong'), 'error');
+      showStatus('文本过长，请限制在 10000 字符以内', 'error');
       return;
     }
 
     resultArea.style.display = 'block';
     const resultHeader = resultArea.querySelector('.popup-result-header span');
-    if (resultHeader) resultHeader.textContent = t('translating');
+    if (resultHeader) resultHeader.textContent = '翻译中...';
     resultText.textContent = '';
     copyBtn.style.display = 'none';
     saveBtn.style.display = 'none';
     statusEl.className = 'popup-status';
     statusEl.textContent = '';
     translateBtn.disabled = true;
-    translateBtn.textContent = t('translatingBtn');
+    translateBtn.textContent = '翻译中...';
 
     try {
       const response = await chrome.runtime.sendMessage({
@@ -56,25 +54,25 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       if (response?.success) {
         resultText.textContent = response.translation;
-        if (resultHeader) resultHeader.textContent = t('translateResult');
+        if (resultHeader) resultHeader.textContent = '翻译结果';
         copyBtn.style.display = '';
         saveBtn.style.display = '';
         addToHistory(text, response.translation);
       } else {
-        const errMsg = response?.error || t('translationFailed');
+        const errMsg = response?.error || '翻译失败';
         resultText.innerHTML = '<span class="error-text">\u274c ' + escapeHtml(errMsg) + '</span>';
-        if (resultHeader) resultHeader.textContent = t('translationFailed');
+        if (resultHeader) resultHeader.textContent = '翻译失败';
         copyBtn.style.display = 'none';
         saveBtn.style.display = 'none';
       }
     } catch (err) {
       resultText.innerHTML = '<span class="error-text">\u274c ' + escapeHtml(err.message) + '</span>';
-      if (resultHeader) resultHeader.textContent = t('translationFailed');
+      if (resultHeader) resultHeader.textContent = '翻译失败';
       copyBtn.style.display = 'none';
       saveBtn.style.display = 'none';
     } finally {
       translateBtn.disabled = false;
-      translateBtn.textContent = t('translate');
+      translateBtn.textContent = '翻译';
     }
   }
 
@@ -115,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.execCommand('copy');
         ta.remove();
       }
-      showStatus(t('copied'), 'success');
+      showStatus('已复制', 'success');
     }
   });
 
@@ -129,10 +127,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           entry: { word: word, translation: translation, targetLang: targetLang.value }
         });
         if (response?.success) {
-          showStatus(t('saveSuccess'), 'success');
+          showStatus('已收藏到单词本', 'success');
         }
       } catch (err) {
-        showStatus(t('saveFailed'), 'error');
+        showStatus('收藏失败', 'error');
       }
     }
   });

@@ -87,13 +87,8 @@
   });
 
   document.addEventListener('scroll', () => {
-    if (iconHideTimeout) { clearTimeout(iconHideTimeout); iconHideTimeout = null; }
-    if (isPopupVisible) {
-      hideTranslatePopup();
-      hideTranslateIcon();
-    } else {
-      hideTranslateIcon();
-    }
+    if (isPopupVisible) return;
+    hideTranslateIcon();
   }, { passive: true });
 
   document.addEventListener('keydown', (event) => {
