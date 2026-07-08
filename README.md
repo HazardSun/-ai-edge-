@@ -1,8 +1,8 @@
 # AI 翻译助手 — AI Translate
 
-> 基于 AI 的智能浏览器翻译插件，支持多种翻译风格、单词本，兼容 Chrome / Edge。
+> 基于 AI 的智能浏览器翻译插件，支持多种翻译风格、单词本、翻译记录，兼容 Chrome / Edge。
 
-![version](https://img.shields.io/badge/version-1.0.1-blue)
+![version](https://img.shields.io/badge/version-1.0.2-blue)
 ![Manifest](https://img.shields.io/badge/Manifest-V3-green)
 
 ---
@@ -10,11 +10,18 @@
 ## 功能
 
 ### 核心翻译
-- **划词翻译**：选中任意文本，自动弹出翻译图标
-- **弹窗面板**：点击浏览器工具栏图标，输入或粘贴文本翻译
+- **划词翻译**：选中任意文本，自动弹出翻译图标，点击图标获取翻译
+- **自动划译**：选中文本后自动翻译，无需点击图标（可在设置中开启）
+- **弹窗面板**：点击浏览器工具栏图标，打开翻译面板输入或粘贴文本
 - **右键菜单**：选中文本 → 右键 → "翻译选中文本"
-- **快捷键**：`Alt+T` 快速翻译当前选中的文本
-- **Ctrl+Enter**：弹窗面板中按 `Ctrl+Enter` 快速翻译
+- **快捷键**：`Alt+T` 快速翻译当前选中的文本；`Ctrl+Enter` 弹窗中快速翻译；`Esc` 关闭弹窗
+
+### 翻译弹窗
+- 弹窗跟随选中文本位置自动定位，超出视口自动调整
+- 显示原文（点击可复制，带绿色反馈）
+- 翻译结果支持复制、收藏到单词本、重试
+- **光标移出弹窗不消失**，仅点击页面其他地方时自动关闭（防止滚动误关）
+- 支持深色/浅色主题
 
 ### 翻译风格
 内置 6 种翻译风格预设，满足不同场景需求：
@@ -31,11 +38,17 @@
 也支持自定义翻译提示词，使用 `{targetLang}` 变量代表目标语言。
 
 ### 单词本
-- **收藏**：翻译结果旁点击书签图标，一键收藏
+- **收藏**：翻译结果旁点击书签图标，一键收藏；重复收藏自动更新并置顶
 - **浏览**：选项页单词本标签页查看所有收藏
 - **搜索**：按单词或翻译内容搜索
 - **导出**：导出为 JSON 文件
 - **清空**：一键清空所有收藏
+
+### 翻译记录
+- 自动保存每次翻译的原文和结果（最多 200 条）
+- 在选项页「翻译记录」标签页中查看、搜索
+- 支持单条删除和清空所有记录
+- 支持 JSON 导出
 
 ### 多语言支持
 支持 20 种目标语言：简体中文、繁体中文、英语、日语、韩语、法语、德语、西班牙语、葡萄牙语、俄语、阿拉伯语、印地语、泰语、越南语、意大利语、荷兰语、波兰语、土耳其语、印尼语、马来语
@@ -54,7 +67,7 @@
 2. 打开 Edge 浏览器，访问 `edge://extensions/`
 3. 开启 **开发人员模式**
 4. 点击 **加载解压缩的扩展**
-5. 选择 `1.0.1` 文件夹
+5. 选择 `1.0.2` 文件夹
 
 ### 配置
 
@@ -63,9 +76,11 @@
    - 选择 AI 服务商（OpenCode / DeepSeek / OpenAI / Moonshot / Ollama / LM Studio）
    - 输入 API 地址和密钥
    - 点击 **测试连接** 验证
+   - 开启「自动划译」让选中文本后直接翻译
 3. **外观设置**：选择主题和字体大小
 4. **翻译风格**：选择预设风格或自定义提示词
 5. **单词本**：管理收藏的单词
+6. **翻译记录**：查看历史翻译
 
 ---
 
@@ -88,7 +103,8 @@
 
 - API 密钥仅存储在浏览器本地 `chrome.storage.sync` 中，不会上传到其他服务器
 - 翻译文本通过你配置的 AI 服务商 API 直接发送，不经过第三方中转
-- 单词本数据存储在浏览器本地 `chrome.storage.local` 中
+- 单词本和翻译记录数据存储在浏览器本地 `chrome.storage.local` 中
+- 翻译记录仅保留最近 200 条
 - 插件不收集任何使用数据或个人信息
 
 ---
@@ -98,30 +114,44 @@
 ### 项目结构
 
 ```
-1.0.1/
-├── manifest.json        # 插件配置
-├── background.js        # 后台服务 (Service Worker)
-├── content.js           # 内容脚本 (划词弹窗)
-├── content.css          # 内容脚本样式
-├── popup.html           # 弹窗面板
-├── popup.js             # 弹窗面板逻辑
-├── popup.css            # 弹窗面板样式
-├── options.html         # 设置页面
-├── options.js           # 设置页面逻辑
-├── options.css          # 设置页面样式
-├── icons/               # 图标
-├── _locales/            # 国际化
-│   ├── zh_CN/           # 中文
-│   └── en/              # 英文
-└── tests/               # 测试
-    ├── e2e.spec.js      # E2E 测试
-    └── options_e2e.spec.js  # 选项页 E2E 测试
+1.0.2/
+├── manifest.json         # 插件配置 (Manifest V3)
+├── background.js         # 后台服务 (Service Worker) — 翻译 API 调用、消息路由
+├── content.js            # 内容脚本 — 划词检测、翻译弹窗、图标交互
+├── content.css           # 内容脚本样式 — 弹窗、图标样式及深色主题
+├── popup.html            # 弹窗面板 HTML (简体中文)
+├── popup.js              # 弹窗面板逻辑 — 输入翻译、结果展示、快捷键
+├── popup.css             # 弹窗面板样式
+├── options.html          # 设置页面 (5 标签页)
+├── options.js            # 设置页面逻辑 — 配置/记录/单词本管理
+├── options.css           # 设置页面样式
+├── icons/                # 插件图标 (SVG)
+│   ├── icon-16.svg
+│   ├── icon-48.svg
+│   └── icon-128.svg
+├── _locales/             # 国际化资源
+│   ├── zh_CN/
+│   │   └── messages.json
+│   └── en/
+│       └── messages.json
+└── tests/                # Playwright E2E 测试
+    ├── e2e.spec.js
+    ├── options_e2e.spec.js
+    ├── v102_e2e.spec.js
+    └── playwright.config.js
 ```
+
+### 开发说明
+
+- 所有页面 UI 直接使用简体中文（非 `__MSG_*__` 动态替换）
+- 国际化文件 (`_locales/*/messages.json`) 主要为 content script 的翻译弹窗和右键菜单提供多语言支持
+- 修改代码后建议执行 Playwright 测试：`npx playwright test --config=tests/playwright.config.js`
+- 支持触屏设备（通过 `pointerup` 事件）
 
 ### 运行测试
 
 ```bash
-cd 1.0.1
+cd 1.0.2
 npm install --save-dev @playwright/test
 npx playwright install msedge
 npx playwright test --config=tests/playwright.config.js --headed
@@ -135,6 +165,7 @@ npx playwright test --config=tests/playwright.config.js --headed
 |------|------|------|
 | 1.0.0 | - | 初始版本：基础划词翻译、弹窗面板、右键菜单 |
 | 1.0.1 | 2026-07 | 新增翻译风格预设、单词本、深色模式、完整 i18n |
+| 1.0.2 | 2026-07 | 新增自动划译、翻译记录、API 超时控制、快捷键提示、可编辑区域保护、textarea 自动缩放、弹窗点击关闭（滚动不关闭）、弹窗面板全面汉化、多项 bug 修复 |
 
 ---
 
