@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>__MSG_appName__</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-topbar">
+      <div class="popup-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="popup-brand">__MSG_appName__</span>
+      <button class="popup-settings-btn" id="openSettings" title="__MSG_settings__">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <div class="popup-lang-row">
+      <label for="popupTargetLang">__MSG_targetLang__</label>
+      <select id="popupTargetLang">
+        <option value="zh-CN">__MSG_languageName_zh_CN__</option>
+        <option value="zh-TW">__MSG_languageName_zh_TW__</option>
+        <option value="en">__MSG_languageName_en__</option>
+        <option value="ja">__MSG_languageName_ja__</option>
+        <option value="ko">__MSG_languageName_ko__</option>
+        <option value="fr">__MSG_languageName_fr__</option>
+        <option value="de">__MSG_languageName_de__</option>
+        <option value="es">__MSG_languageName_es__</option>
+        <option value="pt">__MSG_languageName_pt__</option>
+        <option value="ru">__MSG_languageName_ru__</option>
+        <option value="ar">__MSG_languageName_ar__</option>
+        <option value="hi">__MSG_languageName_hi__</option>
+        <option value="th">__MSG_languageName_th__</option>
+        <option value="vi">__MSG_languageName_vi__</option>
+        <option value="it">__MSG_languageName_it__</option>
+        <option value="nl">__MSG_languageName_nl__</option>
+        <option value="pl">__MSG_languageName_pl__</option>
+        <option value="tr">__MSG_languageName_tr__</option>
+        <option value="id">__MSG_languageName_id__</option>
+        <option value="ms">__MSG_languageName_ms__</option>
+      </select>
+    </div>
+    <div class="popup-input-area">
+      <textarea id="popupInputText" placeholder="__MSG_inputPlaceholder__" rows="4"></textarea>
+    </div>
+    <div class="popup-shortcut-hint">Ctrl+Enter ↵</div>
+    <div class="popup-btn-row">
+      <button class="popup-btn-clear" id="clearBtn">__MSG_clearText__</button>
+      <button class="popup-btn-primary" id="translateBtn">__MSG_translate__</button>
+    </div>
+    <div id="popupResult" class="popup-result-area" style="display:none;">
+      <div class="popup-result-header">
+        <span>__MSG_translating__</span>
+        <div class="popup-result-actions">
+          <button class="popup-result-save" id="popupSaveBtn" title="__MSG_saveWord__">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </button>
+          <button class="popup-result-copy" id="popupCopyBtn" title="__MSG_copy__">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="popupResultText" class="popup-result-text"></div>
+    </div>
+    <div id="popupStatus" class="popup-status"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
